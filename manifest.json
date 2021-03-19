@@ -1,0 +1,15 @@
+{
+  "name": "loop and mute videos",
+  "description": "loop and mute videos",
+  "version": "1.0",
+  "manifest_version": 3,
+  
+  "permissions": ["activeTab"],
+  "content_scripts": [
+    {
+    "matches": ["https://www.youtube.com/*",
+                "<all_urls>"],
+    "js": ["loopmuted.js"]
+    }
+  ]
+}
