@@ -25,83 +25,161 @@ if (document.body.firstChild instanceof HTMLImageElement) {
 
 //============================================================================================
 
-//If the first thing on the page is a video
-if (document.body.firstChild instanceof HTMLVideoElement) {
+
+var allVids = document.getElementsByTagName("video");
+var vid = allVids[0];
+
+if (vid != undefined){
+
     var startTime = "0";
     var endTime = "10";
     var timeCrop;
+    var speed = 1.0;
 
-    //Get the first video
-    var vid = document.getElementsByTagName("video")[0];
+    //Initial settings
+    if (document.body.firstChild instanceof HTMLVideoElement) {
+        vid.setAttribute("loop", "loop");
+        vid.muted = true;
+        vid.controls = false;
+        vid.setAttribute("width", "100%");
+        vid.setAttribute("height", "100%");
+    }
 
-    //If theres a video.  Double check. bc idk why
-    if (vid !== undefined) {
-        //If the video type matches -> loop, mute, hide controls, zoom
-        t = vid.getElementsByTagName("source")[0].type;
-        if ((t == "video/webm") || (t == "video/ogg") || (t == "video/mp4")){
-            vid.setAttribute("loop", "loop");
-            vid.muted = true;
-            vid.controls = false;
-            vid.setAttribute("width", "100%");
-            vid.setAttribute("height", "100%");
-        }
+    //Hotkeys
+    if (true){
 
-        //Hotkeys
         document.addEventListener('keydown', logKey);
         function logKey(e) {
-            //Mute hotkey
-            if (e.code == "KeyM"){
-                vid.muted = !vid.muted;
-                //alert("MUTE");
-            }//If m pressed
             
-            //Controls hotkey
-            if (e.code == "KeyC"){                
-                vid.controls = !vid.controls;
-            }//If c pressed
+            //Switch on keypress
+            switch(e.code){
+                //Mute
+                case "KeyM":
+                    vid.muted = !vid.muted;
+                    break;
             
-            //Zoom hotkey
-            if (e.code == "KeyZ"){
-                //alert(vid.getAttribute("width"));
-                if (vid.getAttribute("width") == "100%") {
-                    vid.removeAttribute("width");
-                    vid.removeAttribute("height");
-                } else {
-                    vid.setAttribute("width", "100%");
-                    vid.setAttribute("height", "100%");
-                }//If/else already zoomed
-            }//If z pressed
-            
-            //Time hotkey.  Enter start_time,end_time to loop.  if blank, defaults to 0/duration respectively.
-            if (e.code == "KeyT"){
-                startTime = String(startTime);
-                var inputTime = prompt("Time range:", startTime.concat(",", endTime));
-                //alert(inputTime);
-                
-                //Stop time cropping if no comma, else -> make a time crop loop
-                if (inputTime == null) {
-                    clearInterval(timeCrop);
-                }
-                var shouldStop = (inputTime.includes(","));
-                if (!shouldStop) {
-                    clearInterval(timeCrop);
-                } else {  //Set defaults if a value is blank
-                    var res = inputTime.split(",");
-                    if (res[0] == "") {
-                        res[0] = 0.0;
-                    }
-                    if (res[1] == "") {
-                        res[1] = vid.duration - 0.05;
-                    }
                     
-                    startTime = res[0];
-                    endTime = res[1];
-                    timeCrop = setInterval(checkTime, 100);
-                }
-            }//If t pressed
+                //Controls
+                case "KeyC":
+                    vid.controls = !vid.controls;
+                    break;
             
             
-        }//logkey
+                //Zoom
+                case "KeyZ":
+                    //alert(vid.getAttribute("width"));
+                    if (vid.getAttribute("width") == "100%") {
+                        vid.removeAttribute("width");
+                        vid.removeAttribute("height");
+                    } else {
+                        vid.setAttribute("width", "100%");
+                        vid.setAttribute("height", "100%");
+                    }//If/else already zoomed
+                    break;
+                    
+                    
+                //Time loop.  Enter start_time,end_time to loop.  if blank, defaults to 0/duration respectively.
+                case "KeyT":
+                    startTime = String(startTime);
+                    var inputTime = prompt("Time range:", startTime.concat(",", endTime));
+                    
+                    //Stop time cropping if no comma, else -> make a time crop loop
+                    if (inputTime == null) {clearInterval(timeCrop);}
+                    
+                    var shouldStop = (inputTime.includes(","));
+                    if (!shouldStop) {
+                        clearInterval(timeCrop);
+                    } else {//Set defaults if a value is blank
+                        var res = inputTime.split(",");
+                        if (res[0] == "") {
+                            res[0] = 0.0;
+                        }
+                        if (res[1] == "") {
+                            res[1] = vid.duration - 0.05;
+                        }
+
+                        startTime = res[0];
+                        endTime = res[1];
+                        timeCrop = setInterval(checkTime, 100);
+                    }
+                    break;
+
+            
+                //Jump time or move frame
+                case "KeyL":
+                    if (vid.paused) {vid.currentTime = vid.currentTime + (1.0/60.0);} else {vid.currentTime = vid.currentTime + 3;}
+                    break;
+                case "KeyJ":               
+                    if (vid.paused) {vid.currentTime = vid.currentTime - (1.0/60.0);} else {vid.currentTime = vid.currentTime - 3;}
+                    break;
+                    
+                    
+                //Time travel
+                case "Digit0":
+                    vid.currentTime = 0.0*vid.duration;
+                    break;
+                case "Digit1":
+                    vid.currentTime = 0.1*vid.duration;
+                    break;
+                case "Digit2":
+                    vid.currentTime = 0.2*vid.duration;
+                    break;
+                case "Digit3":
+                    vid.currentTime = 0.3*vid.duration;
+                    break;
+                case "Digit4":
+                    vid.currentTime = 0.4*vid.duration;
+                    break;
+                case "Digit5":
+                    vid.currentTime = 0.5*vid.duration;
+                    break;
+                case "Digit6":
+                    vid.currentTime = 0.6*vid.duration;
+                    break;
+                case "Digit7":
+                    vid.currentTime = 0.7*vid.duration;
+                    break;
+                case "Digit8":
+                    vid.currentTime = 0.8*vid.duration;
+                    break;
+                case "Digit9":
+                    vid.currentTime = 0.9*vid.duration;
+                    break;
+
+                    
+                //Speed
+                case "Minus":
+                    speed = speed - 0.25;
+                    if (speed < 0.25) {
+                        speed = 0.25;
+                    }
+                    vid.playbackRate = speed;
+                    break;
+
+                case "Equal": //The plus key is shiftEqual.  This avoids the shift.  May need to be changed in the future
+                    speed = speed + 0.25;
+                    if (speed > 5) {
+                        speed = 5;
+                    }
+                    vid.playbackRate = speed;
+                    break;
+
+
+                //Play/pause
+                case "KeyK":
+                    if (vid.paused){vid.play();} else {vid.pause();}
+                    break;
+
+                    
+                //Open source in new tab
+                case "KeyN":
+                    window.open(vid.currentSrc);
+                    break;
+                    
+                    
+            }//Switch
+        }//logkey function
+
 
         //time cropping
         function checkTime() {
@@ -112,8 +190,7 @@ if (document.body.firstChild instanceof HTMLVideoElement) {
             if (vid.currentTime < startTime) {
                 vid.currentTime = startTime;
             }//If before start time
-        }//checkTime
-        
-    }//If video present
-}//If first thing is video
-void 0;
+        }//checkTime function
+
+    }//hotkeys if
+}//if vid exists
